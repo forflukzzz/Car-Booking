@@ -1,0 +1,74 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  background: #f2f7fc;
+}
+
+.app-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  color: #123450;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.app-main h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+}
+
+.app-detail-back { position: absolute; z-index: 5; top: 12px; left: 20px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border: 1px solid #d7e5f8; border-radius: 10px; background: #fff; color: #3479df; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.app-detail-back:hover { background: #f1f6ff; }
+
+.app-main::-webkit-scrollbar { display: none; }
+
+.auth-loading { display: grid; min-height: 100dvh; place-items: center; color: #52647a; font-family: "Segoe UI", sans-serif; }
+
+@media (max-width: 560px) {
+  .app-layout {
+    min-height: 100dvh;
+    height: auto;
+    overflow: visible;
+  }
+
+  .app-main {
+    width: 100%;
+    min-height: 100dvh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 140px;
+  }
+
+  .app-detail-back {
+    top: 8px;
+    left: 10px;
+    max-width: calc(100% - 20px);
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-main:has(.datacar-detail-page),
+  .app-main:has(.car-request-page),
+  .app-main:has(.return-page),
+  .app-main:has(.history-page),
+  .app-main:has(.profile-page) {
+    scroll-padding-bottom: 140px;
+    padding-bottom: 140px !important;
+  }
+}
+

@@ -1,0 +1,742 @@
+@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap");
+
+.datacar-detail-page {
+  --detail-ink: #102b52;
+  --detail-blue: #0875e8;
+  --detail-blue-dark: #064b9d;
+  --detail-muted: #6c829f;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(8px, .8vw, 12px);
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(255, 255, 255, .96), transparent 35%),
+    radial-gradient(ellipse at 95% 90%, rgba(100, 185, 255, .34), transparent 36%),
+    linear-gradient(135deg, #d8ecff 0%, #c9e6ff 48%, #eaf6ff 100%);
+  color: var(--detail-ink);
+  font-family: "Prompt", "Noto Sans Thai", "Segoe UI", sans-serif;
+}
+
+.datacar-detail-page *,
+.datacar-detail-page *::before,
+.datacar-detail-page *::after { box-sizing: border-box; }
+
+.app-main:has(.datacar-detail-page) { padding: 0; overflow: hidden; }
+
+.datacar-detail-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.datacar-detail-topbar {
+  display: flex;
+  min-height: 44px;
+  flex: 0 0 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 7px 4px 12px;
+  border: 1px solid rgba(150, 208, 255, .6);
+  border-radius: 999px;
+  background: linear-gradient(105deg, #0753ad, #06428e 62%, #073a80);
+  box-shadow: 0 5px 14px rgba(14, 77, 145, .23), inset 0 1px 0 rgba(255, 255, 255, .22);
+  color: #fff;
+}
+
+.datacar-detail-tabs {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: clamp(5px, 2vw, 22px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.datacar-detail-tabs::-webkit-scrollbar { display: none; }
+
+.datacar-detail-tabs button {
+  display: inline-flex;
+  min-height: 32px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #f6fbff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.datacar-detail-tabs button > span { color: #c4e5ff; font-size: 17px; line-height: 1; }
+.datacar-detail-tabs button:hover:not(.is-active) { background: rgba(255, 255, 255, .12); }
+.datacar-detail-tabs button.is-active { background: linear-gradient(180deg, #fff, #e6f4ff); color: #0758b7; box-shadow: 0 2px 8px rgba(0, 24, 64, .22); }
+.datacar-detail-tabs button.is-active > span { color: #0875d9; }
+.datacar-detail-tabs button:focus-visible,
+.datacar-detail-back:focus-visible,
+.datacar-detail-range select:focus-visible { outline: 3px solid #8ccaff; outline-offset: 2px; }
+
+.datacar-detail-back {
+  display: inline-flex;
+  min-width: 100px;
+  min-height: 31px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border: 1px solid rgba(123, 202, 255, .7);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #0696f3, #0871d3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .34), 0 2px 6px rgba(0, 31, 79, .2);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter .15s ease, transform .15s ease;
+}
+
+.datacar-detail-back:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.datacar-detail-back span { font-size: 17px; line-height: 1; }
+
+.datacar-detail-card {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.datacar-detail-dashboard {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-rows: minmax(230px, 1.02fr) minmax(185px, .98fr);
+  gap: 11px;
+}
+
+.datacar-detail-overview {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  gap: 12px;
+}
+
+.datacar-detail-vehicle,
+.datacar-detail-content,
+.datacar-detail-stats,
+.datacar-detail-chart-card,
+.datacar-detail-history {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .88);
+  border-radius: 18px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, .96), rgba(232, 245, 255, .9));
+  box-shadow: 0 8px 22px rgba(40, 106, 165, .14), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+
+.datacar-detail-vehicle {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-rows: minmax(0, 1fr);
+  border-color: rgba(255, 255, 255, .95);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .45), transparent 38%),
+    radial-gradient(ellipse at 49% 87%, rgba(255, 255, 255, .92), transparent 42%),
+    linear-gradient(135deg, #bde1ff, #e9f7ff 55%, #a9d6ff);
+}
+
+.datacar-detail-vehicle::before {
+  position: absolute;
+  right: 5%;
+  bottom: 16%;
+  width: 38%;
+  height: 55%;
+  border-right: 1px solid rgba(54, 139, 208, .18);
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .34) 0 15px, transparent 15px 23px);
+  clip-path: polygon(0 35%, 18% 35%, 18% 10%, 37% 10%, 37% 25%, 61% 25%, 61% 0, 100% 0, 100% 100%, 0 100%);
+  content: "";
+  opacity: .6;
+}
+
+.datacar-detail-image {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12px 14px 6px;
+}
+
+.datacar-detail-image::after {
+  position: absolute;
+  right: 5%;
+  bottom: 12px;
+  left: 5%;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(68, 120, 157, .2);
+  content: "";
+  filter: blur(9px);
+}
+
+.datacar-detail-image img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 9px 8px rgba(35, 78, 113, .22));
+  transition: transform .22s ease;
+}
+
+.datacar-detail-vehicle:hover .datacar-detail-image img { transform: translateY(-2px) scale(1.015); }
+
+.datacar-detail-content { display: flex; min-height: 0; flex-direction: column; overflow: hidden; padding: 10px; }
+
+.datacar-detail-panel-heading {
+  position: relative;
+  display: flex;
+  min-height: 36px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 5px;
+  padding: 3px 11px;
+  border-radius: 999px 10px 10px 999px;
+  background: linear-gradient(100deg, #0866c3, #168ee4 70%, rgba(120, 198, 249, .42));
+  color: #fff;
+}
+
+.datacar-detail-panel-heading > span { display: grid; width: 20px; height: 20px; flex: 0 0 20px; place-items: center; border-radius: 6px; background: rgba(255, 255, 255, .2); font-size: 14px; }
+.datacar-detail-panel-heading h2 { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.2; }
+.datacar-detail-panel-heading p { display: block; margin: 2px 0 0; color: rgba(255, 255, 255, .78); font-size: 9px; line-height: 1.2; }
+
+.datacar-detail-info {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 2px;
+  margin: 0;
+  overflow: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #b9d8ef transparent;
+}
+
+.datacar-detail-info > div {
+  display: grid;
+  min-height: 20px;
+  grid-template-columns: minmax(130px, .78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: 7px;
+  padding: 1px 7px;
+  border: 1px solid rgba(208, 228, 246, .5);
+  border-radius: 8px;
+  background: rgba(241, 248, 255, .78);
+}
+
+.datacar-detail-info > div:nth-child(even) { background: rgba(230, 242, 253, .8); }
+.datacar-detail-info dt,
+.datacar-detail-info dd { min-width: 0; margin: 0; font-size: 11px; line-height: 1.25; }
+.datacar-detail-info dt { display: flex; align-items: center; gap: 8px; color: #425b78; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.datacar-detail-info dt::before { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: linear-gradient(145deg, #1394e5, #1261bc); box-shadow: 0 0 0 3px rgba(19, 148, 229, .1); content: ""; }
+.datacar-detail-info dd { overflow: hidden; color: #1e3551; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.datacar-detail-warning,
+.datacar-detail-issue-badge,
+.datacar-detail-issue-clear,
+.datacar-detail-status { display: inline-flex; max-width: 100%; align-items: center; vertical-align: middle; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 1.3; }
+.datacar-detail-inspection-result { display: inline-flex; align-items: center; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: #eaf1f7; color: #60768d; font-size: 10px; font-weight: 700; line-height: 1.3; }
+.datacar-detail-inspection-result--pass { background: #c9f5d7; color: #11873b; }
+.datacar-detail-inspection-result--issue { background: #ffe0dc; color: #c63b3b; }
+.datacar-detail-warning { margin-left: 5px; background: #fff2db; color: #ae6a00; }
+.datacar-detail-issue-badge { overflow: hidden; background: #ffe1df; color: #c63b3b; text-overflow: ellipsis; }
+.datacar-detail-issue-badge--resolved { background: #c9f5d7; color: #11873b; }
+.datacar-detail-issue-clear { background: #eaf1f7; color: #6d7c8c; }
+.datacar-detail-status--available { background: #c9f5d7; color: #11873b; }
+.datacar-detail-status--busy { background: #ffe0dc; color: #c63b3b; }
+.datacar-detail-status--reserved { background: #fff0c6; color: #a6780a; }
+
+.datacar-detail-insights { display: grid; min-width: 0; min-height: 0; grid-template-columns: minmax(220px, .36fr) minmax(0, 1fr); gap: 12px; }
+
+.datacar-detail-stats { display: grid; min-height: 0; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); gap: 9px; padding: 9px; }
+
+.datacar-detail-section-title { display: flex; min-height: 30px; align-items: center; gap: 9px; padding: 3px 10px; border-radius: 999px; background: linear-gradient(105deg, #0563bc, #1492e8); color: #fff; }
+.datacar-detail-section-title > span { display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .2); font-size: 15px; }
+.datacar-detail-section-title h2 { margin: 0; font-size: 15px; font-weight: 700; }
+
+.datacar-detail-stat { position: relative; display: flex; min-height: 0; align-items: center; gap: 12px; overflow: hidden; padding: 9px 12px; border-radius: 14px; }
+.datacar-detail-stat::after { position: absolute; right: -12px; bottom: -29px; width: 110px; height: 62px; border-radius: 50%; background: rgba(255, 255, 255, .2); content: ""; transform: rotate(-18deg); }
+.datacar-detail-stat--distance { background: linear-gradient(120deg, #e7f4ff, #b6dcff); color: #0b5db3; }
+.datacar-detail-stat--trips { background: linear-gradient(120deg, #e5fbe9, #a9e9bd); color: #15823b; }
+.datacar-detail-stat-icon { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 14px; background: rgba(255, 255, 255, .43); font-size: 28px; font-weight: 700; }
+.datacar-detail-stat p { margin: 0 0 2px; color: #315578; font-size: 11px; font-weight: 600; }
+.datacar-detail-stat--trips p { color: #2f6740; }
+.datacar-detail-stat strong { color: #102c53; font-size: clamp(22px, 2.4vw, 29px); font-weight: 700; line-height: 1.15; white-space: nowrap; }
+.datacar-detail-stat--trips strong { color: #123a29; }
+.datacar-detail-stat strong small { font-size: 15px; }
+
+.datacar-detail-chart-card { display: flex; min-height: 0; flex-direction: column; overflow: hidden; padding: 10px 13px 7px; }
+.datacar-detail-chart-heading { display: flex; min-height: 35px; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 12px; }
+.datacar-detail-chart-title { display: flex; min-width: 0; align-items: center; gap: 9px; }
+.datacar-detail-chart-title > span { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border-radius: 50%; background: linear-gradient(145deg, #48b4ff, #0870dd); box-shadow: 0 4px 9px rgba(16, 106, 202, .2); color: white; font-size: 17px; }
+.datacar-detail-chart-title h2 { margin: 0; color: #183754; font-size: 14px; font-weight: 700; line-height: 1.25; }
+.datacar-detail-chart-title p { margin: 1px 0 0; color: #7187a3; font-size: 10px; line-height: 1.25; }
+.datacar-detail-range { display: flex; min-height: 27px; flex: 0 0 auto; align-items: center; gap: 5px; padding: 2px 8px; border: 1px solid #d4e4f4; border-radius: 999px; background: #f7fbff; color: #0875d6; box-shadow: 0 2px 5px rgba(28, 90, 148, .08); }
+.datacar-detail-range > span { font-size: 13px; }
+.datacar-detail-range select { max-width: 104px; border: 0; background: transparent; color: #315477; font: inherit; font-size: 10px; font-weight: 600; outline: 0; cursor: pointer; }
+.datacar-detail-chart { min-height: 0; flex: 1 1 auto; }
+.datacar-detail-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.datacar-detail-chart-grid { stroke: #c7dcef; stroke-dasharray: 2 3; stroke-width: 1; }
+.datacar-detail-chart-tick { fill: #58728d; font: 11px "Prompt", sans-serif; }
+.datacar-detail-chart-area { fill: url(#usage-area-fill); }
+.datacar-detail-chart-line { fill: none; stroke: #0876f9; stroke-linecap: round; stroke-linejoin: round; stroke-width: 3.2; }
+.datacar-detail-chart-point { fill: #fff; stroke: #0876f9; stroke-width: 2.5; }
+.datacar-detail-chart-callout rect { fill: #0874d9; filter: drop-shadow(0 2px 3px rgba(13, 69, 135, .22)); }
+.datacar-detail-chart-callout text { fill: #fff; font: 700 10px "Prompt", sans-serif; text-anchor: middle; }
+.datacar-detail-chart-month { fill: #445d78; font: 600 10px "Prompt", sans-serif; text-anchor: middle; }
+
+.datacar-detail-tables { display: grid; min-height: 0; flex: 1 1 auto; grid-template-columns: minmax(0, 1fr); }
+.datacar-detail-history { display: flex; min-height: 0; flex-direction: column; padding: 16px; }
+.datacar-detail-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.datacar-detail-history-heading h2 { margin: 0; color: #183754; font-size: 18px; font-weight: 700; }
+.datacar-detail-history-heading p { margin: 2px 0 0; color: var(--detail-muted); font-size: 11px; }
+.datacar-detail-history-heading > span { padding: 5px 10px; border-radius: 999px; background: #e9f4ff; color: #2769aa; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.datacar-detail-table-scroll { min-height: 0; flex: 1 1 auto; overflow: auto; border: 1px solid #dce9f4; border-radius: 12px; }
+.datacar-detail-table { width: 100%; min-width: 1180px; table-layout: fixed; border-collapse: collapse; color: #344b66; font-size: 11px; text-align: center; }
+.datacar-detail-table th,
+.datacar-detail-table td { height: 40px; padding: 7px 9px; border-bottom: 1px solid #e8f0f7; line-height: 1.35; }
+.datacar-detail-table th { position: sticky; top: 0; z-index: 1; height: 38px; background: #edf6ff; color: #49627d; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.datacar-detail-table tbody tr:hover { background: #f5faff; }
+.datacar-detail-table tbody tr:last-child td { border-bottom: 0; }
+.datacar-detail-table--usage th:nth-child(1) { width: 9%; }
+.datacar-detail-table--usage th:nth-child(2) { width: 11%; }
+.datacar-detail-table--usage th:nth-child(3) { width: 17%; }
+.datacar-detail-table--usage th:nth-child(4),
+.datacar-detail-table--usage th:nth-child(5),
+.datacar-detail-table--usage th:nth-child(6),
+.datacar-detail-table--usage th:nth-child(7) { width: 9%; }
+.datacar-detail-table--usage th:nth-child(8) { width: 10%; }
+.datacar-detail-table--usage th:nth-child(9) { width: 17%; }
+.datacar-detail-table--usage,
+.datacar-detail-table--usage th,
+.datacar-detail-table--usage td { text-align: left; }
+.datacar-detail-table--management,
+.datacar-detail-table--management th,
+.datacar-detail-table--management td { text-align: left; }
+.datacar-detail-table--usage td { vertical-align: middle; }
+.datacar-detail-date-cell { white-space: nowrap; }
+.datacar-detail-user-cell { color: #214d73; font-weight: 700; }
+.datacar-detail-purpose-cell { overflow-wrap: anywhere; text-align: left; }
+.datacar-detail-usage-issue { display: inline-block; max-width: 230px; padding: 5px 8px; border: 1px solid #ffc9c5; border-radius: 8px; background: #fff2f1; color: #c6473f; font-size: 10px; font-weight: 600; line-height: 1.4; text-align: left; }
+.datacar-detail-usage-issue--resolved { border-color: #b8e8ca; background: #effbf3; color: #21844d; }
+.datacar-detail-usage-clear { color: #2b9963; font-size: 10px; font-weight: 600; }
+.datacar-detail-history-status { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.datacar-detail-history-status i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.datacar-detail-history-status--returned { color: #16884b; }
+.datacar-detail-history-status--in-use { color: #d7473d; }
+.datacar-detail-history-status--reserved { color: #ae7a0c; }
+.datacar-detail-history-status--cancelled { color: #7b8da1; }
+.datacar-service-type { display: inline-flex; padding: 4px 9px; border-radius: 999px; background: #e8f3ff; color: #2866a6; font-size: 10px; font-weight: 600; }
+.datacar-service-type--prb { background: #fff2dc; color: #a76912; }
+.datacar-service-type--insurance { background: #eee9ff; color: #684bb3; }
+.datacar-service-type--inspection { background: #e3f6eb; color: #16814a; }
+.datacar-service-type--maintenance { background: #e6f2ff; color: #2869b1; }
+
+@media (max-width: 900px) {
+  .datacar-detail-info > div { grid-template-columns: minmax(112px, .78fr) minmax(0, 1.22fr); }
+  .datacar-detail-info dt,
+  .datacar-detail-info dd { font-size: 10px; }
+  .datacar-detail-insights { grid-template-columns: minmax(205px, .38fr) minmax(0, 1fr); }
+}
+
+@media (min-width: 701px) and (max-height: 620px) {
+  .datacar-detail-dashboard { grid-template-rows: minmax(170px, 1fr) minmax(135px, .82fr); }
+  .datacar-detail-content { padding: 7px; }
+  .datacar-detail-panel-heading { min-height: 32px; margin-bottom: 4px; }
+  .datacar-detail-panel-heading p { display: none; }
+  .datacar-detail-info { gap: 2px; }
+  .datacar-detail-info > div { min-height: 19px; padding: 1px 6px; }
+  .datacar-detail-info dt,
+  .datacar-detail-info dd { font-size: 10px; }
+  .datacar-detail-stats { gap: 6px; padding: 6px; }
+  .datacar-detail-stat-icon { width: 38px; height: 38px; flex-basis: 38px; font-size: 22px; }
+}
+
+@media (max-width: 700px) {
+  .app-main:has(.datacar-detail-page) { overflow-x: hidden; overflow-y: auto; }
+  .datacar-detail-page { height: auto; min-height: 100dvh; overflow: visible; padding: 8px; }
+  .datacar-detail-container { height: auto; min-height: calc(100dvh - 16px); }
+  .datacar-detail-topbar { position: sticky; top: 0; z-index: 5; }
+  .datacar-detail-card { min-height: 0; }
+  .datacar-detail-dashboard { flex: 0 0 auto; grid-template-rows: auto auto; }
+  .datacar-detail-overview { grid-template-columns: minmax(0, 1fr); }
+  .datacar-detail-vehicle { min-height: 260px; }
+  .datacar-detail-content { min-height: 290px; }
+  .datacar-detail-info { overflow: visible; }
+  .datacar-detail-info > div { min-height: 25px; grid-template-columns: minmax(145px, .8fr) minmax(0, 1.2fr); }
+  .datacar-detail-info dt,
+  .datacar-detail-info dd { font-size: 11px; }
+  .datacar-detail-insights { grid-template-columns: minmax(0, 1fr); }
+  .datacar-detail-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto minmax(82px, 1fr); }
+  .datacar-detail-section-title { grid-column: 1 / -1; }
+  .datacar-detail-chart-card { min-height: 250px; }
+  .datacar-detail-tables--single .datacar-detail-history { min-height: 420px; }
+}
+
+@media (max-width: 480px) {
+  .datacar-detail-topbar { min-height: 82px; flex-wrap: wrap; gap: 4px; padding: 5px 7px; border-radius: 18px; }
+  .datacar-detail-tabs { order: 2; width: 100%; height: 35px; flex: 1 0 100%; justify-content: space-between; gap: 2px; }
+  .datacar-detail-tabs button { min-height: 31px; gap: 4px; padding: 4px 6px; font-size: 9px; }
+  .datacar-detail-tabs button > span { font-size: 13px; }
+  .datacar-detail-back { min-height: 27px; margin-left: auto; font-size: 10px; }
+  .datacar-detail-vehicle { min-height: 215px; }
+  .datacar-detail-info > div { grid-template-columns: minmax(125px, .8fr) minmax(0, 1.2fr); }
+  .datacar-detail-info dt,
+  .datacar-detail-info dd { font-size: 10px; }
+  .datacar-detail-insights { gap: 8px; }
+  .datacar-detail-stat { gap: 8px; padding: 8px; }
+  .datacar-detail-stat-icon { width: 38px; height: 38px; flex-basis: 38px; font-size: 22px; }
+  .datacar-detail-stat p { font-size: 10px; }
+  .datacar-detail-stat strong { font-size: 20px; }
+  .datacar-detail-stat strong small { font-size: 12px; }
+  .datacar-detail-chart-card { min-height: 220px; padding-inline: 7px; }
+  .datacar-detail-chart-heading { gap: 5px; }
+  .datacar-detail-chart-title { gap: 6px; }
+  .datacar-detail-chart-title > span { width: 27px; height: 27px; flex-basis: 27px; }
+  .datacar-detail-chart-title h2 { font-size: 12px; }
+  .datacar-detail-chart-title p { font-size: 9px; }
+  .datacar-detail-range { gap: 2px; padding-inline: 5px; }
+  .datacar-detail-range select { max-width: 85px; font-size: 9px; }
+  .datacar-detail-history { padding: 11px; }
+  .datacar-detail-history-heading h2 { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datacar-detail-tabs button,
+  .datacar-detail-back,
+  .datacar-detail-image img { transition: none; }
+}
+
+@media (max-width: 560px) {
+  .datacar-detail-page {
+    padding: 10px 10px 150px;
+    background: linear-gradient(180deg, #edf6ff 0, #f8fbff 32%, #fff 100%);
+  }
+
+  .datacar-detail-topbar {
+    border: 1px solid #dceafb;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 7px 20px rgba(35, 82, 135, .1);
+    backdrop-filter: blur(10px);
+  }
+
+  .datacar-detail-card {
+    border: 1px solid #e1edf8;
+    border-radius: 18px;
+    box-shadow: 0 9px 24px rgba(35, 82, 135, .08);
+  }
+
+  .datacar-detail-vehicle,
+  .datacar-detail-content,
+  .datacar-detail-stats,
+  .datacar-detail-chart-card,
+  .datacar-detail-history {
+    border-radius: 16px;
+  }
+
+  .datacar-detail-image {
+    min-height: 210px;
+  }
+
+  .datacar-detail-info > div {
+    border-radius: 10px;
+    background: #fbfdff;
+  }
+}
+
+/* Mobile detail page: single-column flow with a real scroll container. */
+@media (max-width: 560px) {
+  .app-main:has(.datacar-detail-page) {
+    height: auto !important;
+    min-height: 100dvh;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .datacar-detail-page {
+    width: 100%;
+    min-height: 100dvh;
+    height: auto;
+    overflow: visible;
+    padding: 10px 10px 160px;
+    overflow: visible !important;
+  }
+
+  .datacar-detail-container {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+  }
+
+  .datacar-detail-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    min-height: 58px;
+    margin-bottom: 12px;
+    padding: 7px;
+    border-radius: 16px;
+  }
+
+  .datacar-detail-tabs {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    gap: 5px;
+    padding: 4px;
+    border-radius: 12px;
+    background: #0867f9;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .datacar-detail-tabs::-webkit-scrollbar { display: none; }
+  .datacar-detail-tabs button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    min-height: 36px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #fff;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .datacar-detail-tabs button.is-active {
+    background: #fff;
+    color: #0759d9;
+    box-shadow: 0 3px 8px rgba(0, 48, 145, .2);
+  }
+  .datacar-detail-back {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 6px 9px;
+    border-radius: 10px;
+    font-size: 10px;
+  }
+
+  .datacar-detail-card {
+    width: 100%;
+    min-height: 0;
+    overflow: visible;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .datacar-detail-dashboard,
+  .datacar-detail-overview,
+  .datacar-detail-insights {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .datacar-detail-vehicle {
+    width: 100%;
+    min-height: 0;
+    padding: 8px;
+  }
+  .datacar-detail-image {
+    width: 100%;
+    height: clamp(190px, 58vw, 260px);
+    min-height: 0;
+    border-radius: 14px;
+  }
+  .datacar-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .datacar-detail-content {
+    width: 100%;
+    min-height: 0;
+    padding: 14px;
+  }
+  .datacar-detail-panel-heading { margin-bottom: 12px; }
+  .datacar-detail-panel-heading h2 { font-size: 17px; }
+  .datacar-detail-panel-heading p { font-size: 10px; }
+  .datacar-detail-info { display: grid; grid-template-columns: 1fr; gap: 7px; }
+  .datacar-detail-info > div {
+    display: grid;
+    grid-template-columns: minmax(126px, .9fr) minmax(0, 1.1fr);
+    gap: 8px;
+    min-height: 38px;
+    align-items: center;
+    padding: 8px 10px;
+  }
+  .datacar-detail-info dt,
+  .datacar-detail-info dd { font-size: 11px; line-height: 1.35; }
+  .datacar-detail-info dd { overflow-wrap: anywhere; }
+
+  .datacar-detail-stats {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    padding: 10px;
+  }
+  .datacar-detail-section-title { grid-column: 1 / -1; }
+  .datacar-detail-stat { min-width: 0; padding: 10px; }
+  .datacar-detail-stat-icon { width: 34px; height: 34px; flex-basis: 34px; }
+  .datacar-detail-stat p { font-size: 10px; }
+  .datacar-detail-stat strong { font-size: 18px; }
+
+  .datacar-detail-chart-card,
+  .datacar-detail-history { width: 100%; min-width: 0; }
+  .datacar-detail-chart-card { min-height: 230px; padding: 12px 8px; }
+  .datacar-detail-chart {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .datacar-detail-chart svg {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: 680 / 190;
+  }
+  .datacar-detail-history { min-height: 0; padding: 12px; }
+  .datacar-detail-table-scroll { max-width: 100%; overflow-x: auto; }
+  .datacar-detail-table { min-width: 760px; }
+}
+
+@media (max-width: 560px) {
+  .app-main:has(.datacar-detail-page) {
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .datacar-detail-page,
+  .datacar-detail-container,
+  .datacar-detail-card {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .datacar-detail-card { padding-bottom: 24px; }
+}
+
+@media (max-width: 560px) {
+  .datacar-detail-page {
+    padding-top: 70px;
+  }
+
+  .datacar-detail-topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 50;
+    display: block;
+    width: 100%;
+    min-height: 0;
+    margin-bottom: 14px;
+    padding: 10px 10px 0;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  .datacar-detail-back {
+    display: none;
+  }
+
+  .datacar-detail-tabs {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #d8e5f3;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .datacar-detail-tabs button {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+    min-height: 48px;
+    padding: 6px 4px 9px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #72849a;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .datacar-detail-tabs button::after {
+    position: absolute;
+    right: 28%;
+    bottom: -1px;
+    left: 28%;
+    height: 2px;
+    border-radius: 999px;
+    background: #2474ed;
+    content: "";
+    opacity: 0;
+    transform: scaleX(1);
+    transition: background-color 180ms ease, opacity 180ms ease;
+  }
+  .datacar-detail-tabs button > span { display: inline-block; margin-right: 4px; font-size: 12px; }
+  .datacar-detail-tabs button:hover,
+  .datacar-detail-tabs button:focus-visible { color: #2474ed; }
+  .datacar-detail-tabs button.is-active {
+    background: transparent;
+    color: #145ac6;
+    box-shadow: none;
+  }
+  .datacar-detail-tabs button:hover::after,
+  .datacar-detail-tabs button:focus-visible::after,
+  .datacar-detail-tabs button.is-active::after {
+    opacity: 1;
+    background: #2474ed;
+  }
+}
