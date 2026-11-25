@@ -470,7 +470,7 @@ function App() {
           />
         );
       case "profile":
-        return <Profile user={currentUser ?? { name: "Guest", uid: "guest" }} records={borrowRecords} onReturn={openReturn} onRefresh={async () => { const latestRecords = await readBorrowRecords(); setBorrowRecords(latestRecords); }} />;
+        return <Profile user={currentUser ?? { name: "Guest", uid: "guest" }} records={borrowRecords} onReturn={openReturn} onCancelReservation={cancelReservation} onRefresh={async () => { const latestRecords = await readBorrowRecords(); setBorrowRecords(latestRecords); }} />;
       case "settings":
         return <Setting users={users} cars={cars} carLoadError={carLoadError} passwordResetRequests={passwordResetRequests} onApprovePasswordReset={approveDirectoryPasswordReset} onAddCar={addCar} onUpdateCar={updateCar} onDeleteCar={deleteCar} onAddUser={addDirectoryUser} onUpdateUser={editDirectoryUser} onDeleteUser={removeDirectoryUser} />;
       case "managecar":

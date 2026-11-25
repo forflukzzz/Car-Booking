@@ -60,6 +60,11 @@ export default function ReturnPage({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!returnDate) {
+      setErrorMessage("กรุณาเลือกวันที่คืนรถ");
+      return;
+    }
+
     const latestMileage = Number(mileage.replace(/,/g, ""));
     const startingMileage = Number(record.mileage.replace(/,/g, ""));
     if (!Number.isFinite(latestMileage) || latestMileage < startingMileage) {
@@ -145,7 +150,7 @@ export default function ReturnPage({
               </label>
               <label className="return-field">
                 วันที่คืน
-                <span className="return-date-input-wrap"><input className="return-date-display" type="text"value={formatDate(returnDate)} readOnly aria-readonly="true" required /><input ref={returnDateRef} className="return-native-date" type="date" value={returnDate} min={startDate || undefined} onChange={(event) => setReturnDate(event.target.value)} tabIndex={-1} aria-hidden="true" /><button type="button" aria-label="เลือกวันที่คืน" onClick={() => returnDateRef.current?.showPicker?.()}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18" /></svg></button></span>
+                <span className="return-date-input-wrap"><input className="return-date-display" type="text" value={formatDate(returnDate)} readOnly aria-readonly="true" aria-required="true" required /><input ref={returnDateRef} className="return-native-date" type="date" value={returnDate} min={startDate || undefined} onChange={(event) => { setReturnDate(event.target.value); setErrorMessage(""); }} tabIndex={-1} aria-hidden="true" required /><button type="button" aria-label="เลือกวันที่คืน" onClick={() => returnDateRef.current?.showPicker?.()}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18" /></svg></button></span>
               </label>
             </div>
 
@@ -208,7 +213,12 @@ export default function ReturnPage({
       </section>
       {pendingReturn && <div className="return-confirm-backdrop" role="presentation">
         <section className="return-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="return-confirm-title">
-          <span className="return-confirm-icon" aria-hidden="true">โ“</span>
+          <span className="return-confirm-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" focusable="false">
+              <path d="M9 27.5 12.5 18a3 3 0 0 1 2.8-2h17.4a3 3 0 0 1 2.8 2l3.5 9.5V37H9v-9.5Z" />
+              <path d="M10 27h29M14 33h.01M34 33h.01M27 11l3 3 7-7" />
+            </svg>
+          </span>
           <h2 id="return-confirm-title">ยืนยันการคืนรถ</h2>
           <p>ตรวจสอบข้อมูลก่อนยืนยันคืนรถทะเบียน {record.plate}</p>
           <dl className="return-confirm-summary">

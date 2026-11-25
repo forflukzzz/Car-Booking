@@ -30,9 +30,9 @@ const CalendarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="
 const CarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.7-4.2A2 2 0 0 1 8.56 5.5h6.88a2 2 0 0 1 1.86 1.3L19 11" /><path d="M3 11h18v6H3zM6 17v2M18 17v2M6 14h.01M18 14h.01" /></svg>;
 
 type ProfileUser = { name: string; uid: string };
-type ProfileProps = { user: ProfileUser | null; records: BorrowRecord[]; onReturn: (record: BorrowRecord) => void; onRefresh?: () => Promise<void> };
+type ProfileProps = { user: ProfileUser | null; records: BorrowRecord[]; onReturn: (record: BorrowRecord) => void; onCancelReservation: (id: number) => void; onRefresh?: () => Promise<void> };
 
-export default function Profile({ user, records, onReturn, onRefresh }: ProfileProps) {
+export default function Profile({ user, records, onReturn, onCancelReservation, onRefresh }: ProfileProps) {
   useEffect(() => {
     void onRefresh?.();
   }, []);
@@ -76,7 +76,7 @@ export default function Profile({ user, records, onReturn, onRefresh }: ProfileP
              </div></div>
           <div className="profile-history-tools"><label className="profile-search"><span aria-hidden="true">⌕</span><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาทะเบียนรถ, วัตถุประสงค์..." aria-label="ค้นหาประวัติการใช้รถ" /></label></div><div className="profile-table-scroll">
             <table className="profile-table">
-               <thead><tr><th>วันที่ยืม / จอง</th><th>ทะเบียนรถ</th><th>วัตถุประสงค์</th><th>เลขไมล์ก่อนใช้</th><th>วันที่คืนรถ</th><th>เลขไมล์หลังใช้งาน</th><th>ระยะทาง</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{visibleRecords.map((record) => <tr key={record.id}><td>{formatProfileDate(record.date)}</td><td className="profile-plate">{record.plate}</td><td>{record.purpose}</td><td>{record.startMileage}</td><td>{formatProfileDate(record.returnDate)}</td><td>{record.endMileage}</td><td>{record.distance}</td><td><span className="profile-status">{statusLabels[record.status] || record.status}</span></td><td>{record.status === "in-use" ? <button className="profile-return-button" type="button" onClick={() => onReturn(record.source)}>คืนรถ</button> : record.status === "returned" ? "เสร็จสิ้น" : record.status === "cancelled" ? "ยกเลิกแล้ว" : "-"}</td></tr>)}</tbody></table></div>
+               <thead><tr><th>วันที่ยืม / จอง</th><th>ทะเบียนรถ</th><th>วัตถุประสงค์</th><th>เลขไมล์ก่อนใช้</th><th>วันที่คืนรถ</th><th>เลขไมล์หลังใช้งาน</th><th>ระยะทาง</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>{visibleRecords.map((record) => <tr key={record.id}><td>{formatProfileDate(record.date)}</td><td className="profile-plate">{record.plate}</td><td>{record.purpose}</td><td>{record.startMileage}</td><td>{formatProfileDate(record.returnDate)}</td><td>{record.endMileage}</td><td>{record.distance}</td><td><span className="profile-status">{statusLabels[record.status] || record.status}</span></td><td><div className="profile-action-buttons">{record.status === "reserved" && <button className="profile-cancel-button" type="button" onClick={() => onCancelReservation(record.id)}>ยกเลิก</button>}{record.status === "in-use" && <button className="profile-return-button" type="button" onClick={() => onReturn(record.source)}>คืนรถ</button>}{record.status === "returned" ? "เสร็จสิ้น" : record.status === "cancelled" ? "ยกเลิกแล้ว" : ""}</div></td></tr>)}</tbody></table></div>
 
         </section>
       </div>

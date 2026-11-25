@@ -380,6 +380,16 @@
   font-weight: 700;
 }
 
+.return-confirm-icon svg {
+  width: 29px;
+  height: 29px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
 .return-confirm-dialog h2 { margin: 0 0 8px; font-size: 20px; }
 .return-confirm-dialog > p { margin: 0; color: #66768c; font-size: 13px; }
 .return-confirm-summary { display: grid; gap: 8px; margin: 18px 0 0; text-align: left; }

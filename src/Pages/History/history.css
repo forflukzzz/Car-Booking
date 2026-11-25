@@ -17,7 +17,8 @@
   font-family: "Prompt", "Noto Sans Thai", sans-serif;
 }
 
-.borrow-history-mobile-return { display: none; }
+.borrow-history-mobile-return,
+.borrow-history-mobile-cancel { display: none; }
 
 .borrow-history-page *,
 .borrow-history-page *::before,
@@ -1011,6 +1012,24 @@
     font-size: 10px;
     font-weight: 700;
     box-shadow: 0 3px 8px rgba(229, 57, 53, .2);
+  }
+
+  .borrow-history-mobile-cancel {
+    display: inline-flex;
+    order: -1;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    min-height: 26px;
+    margin: 0 4px 0 0;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 7px;
+    background: #fff0ed;
+    color: #c54c3c;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
   }
 
   .borrow-history-date {
