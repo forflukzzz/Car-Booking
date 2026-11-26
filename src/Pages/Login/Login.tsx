@@ -93,7 +93,7 @@ export default function Login({ onSignedIn }: LoginProps) {
         <label className="uid-login-field"><span className="sr-only">Username</span><input id="login-uid" name="uid" autoComplete="username" value={uid} onChange={(event) => setUid(event.target.value)} placeholder="Username :" required /></label>
         <label className="uid-login-field"><span className="sr-only">Password</span><input id="login-password" name="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password :" required /></label>
         {error && <p className="uid-login-error" role="alert">{error}</p>}
-        <button className="uid-login-submit" type="submit" disabled={busy}>{busy ? "Loading..." : "Login"}</button>
+        <button className="uid-login-submit" type="submit" disabled={busy}>{busy ? "Loading..." : "เข้าสู่ระบบ"}</button>
         <button className="uid-login-secondary" type="button" onClick={() => { setForgotMode(true); setError(""); }}>ลืมรหัสผ่าน?</button>
       </form>}
     </section>
