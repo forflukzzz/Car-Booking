@@ -141,10 +141,9 @@ export default function ReturnPage({
               <label className="return-field return-field--readonly">
                 วันที่ยืม
                 <input
-                  type="date"
-                  value={startDate}
+                  type="text"
+                  value={formatDate(startDate)}
                   readOnly
-                  disabled
                   aria-readonly="true"
                 />
               </label>
