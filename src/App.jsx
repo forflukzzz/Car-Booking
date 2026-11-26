@@ -17,6 +17,7 @@ import { createCar, deleteCar as deleteCarFromDatabase, readCars, updateCar as u
 import { createCarServiceRecord, readCarServiceRecords } from "./Database/carServiceStorage";
 import { approvePasswordReset, clearStoredDirectoryUser, createDirectoryUser, deleteDirectoryUser, getStoredDirectoryUser, readDirectoryUsers, readPasswordResetRequests, readSignedInDirectoryUser, saveSignedInUser, updateDirectoryUser } from "./Database/userDirectory";
 import { supabase } from "./Database/supabase";
+import { requestBrowserNotificationPermission, showBrowserNotification } from "./Database/browserNotifications";
 
 const pagePaths = {
   login: "/login",
@@ -131,8 +132,22 @@ function App() {
 
   useEffect(() => {
     if (!currentUser || !["admin", "manager"].includes(currentUser.role)) return;
+    void requestBrowserNotificationPermission();
     readDirectoryUsers().then(setUsers).catch(() => setUsers([]));
     if (currentUser.role === "admin") readPasswordResetRequests().then(setPasswordResetRequests).catch(() => setPasswordResetRequests([]));
+  }, [currentUser?.id, currentUser?.role]);
+
+  useEffect(() => {
+    if (!currentUser || !["admin", "manager"].includes(currentUser.role)) return undefined;
+    const channel = supabase
+      .channel("car-booking-borrow-record-notifications")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "borrow_records" }, (payload) => {
+        const record = payload.new;
+        const requester = String(record.requester || "ผู้ใช้").replace(/\s*\(UID:\s*[^)]+\)\s*$/i, "").trim();
+        showBrowserNotification("มีคำขอใช้รถใหม่", `${requester} ขอใช้รถ ${record.model || ""} ทะเบียน ${record.plate || ""}`.trim());
+      })
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
   }, [currentUser?.id, currentUser?.role]);
 
   useEffect(() => {
