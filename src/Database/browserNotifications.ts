@@ -8,11 +8,16 @@ export const requestBrowserNotificationPermission = async () => {
   return Notification.permission === "granted";
 };
 
-export const showBrowserNotification = (title: string, body: string) => {
+export const showBrowserNotification = async (title: string, body: string) => {
   if (typeof window === "undefined" || !("Notification" in window) || Notification.permission !== "granted") return;
-  new Notification(title, {
-    body,
-    icon: iconUrl,
-    tag: "car-booking-request",
-  });
+  try {
+    const registration = await navigator.serviceWorker?.getRegistration();
+    if (registration) {
+      await registration.showNotification(title, { body, icon: iconUrl, tag: "car-booking-activity" });
+      return;
+    }
+    new Notification(title, { body, icon: iconUrl, tag: "car-booking-activity" });
+  } catch {
+    new Notification(title, { body, icon: iconUrl, tag: "car-booking-activity" });
+  }
 };

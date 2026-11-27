@@ -18,6 +18,7 @@ import { createCarServiceRecord, readCarServiceRecords } from "./Database/carSer
 import { approvePasswordReset, clearStoredDirectoryUser, createDirectoryUser, deleteDirectoryUser, getStoredDirectoryUser, readDirectoryUsers, readPasswordResetRequests, readSignedInDirectoryUser, saveSignedInUser, updateDirectoryUser } from "./Database/userDirectory";
 import { supabase } from "./Database/supabase";
 import { requestBrowserNotificationPermission, showBrowserNotification } from "./Database/browserNotifications";
+import { notifyPushActivity, registerPushSubscription, removePushSubscriptions } from "./Database/pushNotifications";
 
 const pagePaths = {
   login: "/login",
@@ -68,6 +69,8 @@ function App() {
   );
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedBorrowRecord, setSelectedBorrowRecord] = useState(null);
+  const [notificationEnabled, setNotificationEnabled] = useState(() => window.localStorage.getItem("car-booking-notifications") !== "off");
+  const [notificationToast, setNotificationToast] = useState(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -131,24 +134,36 @@ function App() {
   }, [borrowRecords, cars.length]);
 
   useEffect(() => {
-    if (!currentUser || !["admin", "manager"].includes(currentUser.role)) return;
-    void requestBrowserNotificationPermission();
+    if (!currentUser || !notificationEnabled) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    registerPushSubscription(currentUser.uid).catch(() => undefined);
     readDirectoryUsers().then(setUsers).catch(() => setUsers([]));
     if (currentUser.role === "admin") readPasswordResetRequests().then(setPasswordResetRequests).catch(() => setPasswordResetRequests([]));
-  }, [currentUser?.id, currentUser?.role]);
+  }, [currentUser?.id, currentUser?.role, notificationEnabled]);
 
   useEffect(() => {
-    if (!currentUser || !["admin", "manager"].includes(currentUser.role)) return undefined;
+    if (!currentUser || !notificationEnabled) return undefined;
     const channel = supabase
       .channel("car-booking-borrow-record-notifications")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "borrow_records" }, (payload) => {
         const record = payload.new;
-        const requester = String(record.requester || "ผู้ใช้").replace(/\s*\(UID:\s*[^)]+\)\s*$/i, "").trim();
-        showBrowserNotification("มีคำขอใช้รถใหม่", `${requester} ขอใช้รถ ${record.model || ""} ทะเบียน ${record.plate || ""}`.trim());
+        if (currentUser.uid && String(record.requester || "").includes(`(UID: ${currentUser.uid})`)) return;
+        const body = `${String(record.requester || "ผู้ใช้งาน").replace(/\s*\(UID:\s*[^)]+\)\s*$/i, "").trim()} ขอใช้รถ ${record.model || ""} ทะเบียน ${record.plate || ""}`.trim();
+        setNotificationToast({ title: "มีรายการยืมรถใหม่", body });
+        window.setTimeout(() => setNotificationToast(null), 6000);
+        showBrowserNotification("มีรายการยืมรถใหม่", body);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "borrow_records" }, (payload) => {
+        const record = payload.new;
+        if (record.status !== "returned" || (currentUser.uid && String(record.requester || "").includes(`(UID: ${currentUser.uid})`))) return;
+        const body = `${String(record.requester || "ผู้ใช้งาน").replace(/\s*\(UID:\s*[^)]+\)\s*$/i, "").trim()} คืนรถทะเบียน ${record.plate || ""} เรียบร้อยแล้ว`;
+        setNotificationToast({ title: "มีการคืนรถแล้ว", body });
+        window.setTimeout(() => setNotificationToast(null), 6000);
+        showBrowserNotification("มีการคืนรถแล้ว", body);
       })
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
-  }, [currentUser?.id, currentUser?.role]);
+  }, [currentUser?.id, currentUser?.role, currentUser?.uid, notificationEnabled]);
 
   useEffect(() => {
     readCars()
@@ -257,6 +272,7 @@ function App() {
       setBorrowRecords((records) => records.map((record) => record.id === updated.id ? { ...updated, issueReport: details.issueReport?.trim() || undefined } : record));
       setCars((currentCars) => currentCars.map((car) => car.id === savedCar.id ? savedCar : car));
       setSelectedCar((currentCar) => currentCar?.id === savedCar.id ? savedCar : currentCar);
+      void notifyPushActivity({ type: "return", requester: details.requester, requesterUid: details.requester.match(/\(UID:\s*([^\)]+)\)/i)?.[1], model: returnedRecord.model, plate: returnedRecord.plate });
       setStorageError(null);
       navigateToPage("status");
       return true;
@@ -369,6 +385,7 @@ function App() {
   };
 
   const handleLogout = async () => {
+    if (currentUser?.uid) await removePushSubscriptions(currentUser.uid);
     clearStoredDirectoryUser();
     setCurrentUser(null);
     setSelectedCar(null);
@@ -485,7 +502,7 @@ function App() {
           />
         );
       case "profile":
-        return <Profile user={currentUser ?? { name: "Guest", uid: "guest" }} records={borrowRecords} onReturn={openReturn} onCancelReservation={cancelReservation} onRefresh={async () => { const latestRecords = await readBorrowRecords(); setBorrowRecords(latestRecords); }} />;
+        return <Profile user={currentUser ?? { name: "Guest", uid: "guest" }} records={borrowRecords} onReturn={openReturn} onCancelReservation={cancelReservation} onRefresh={async () => { const latestRecords = await readBorrowRecords(); setBorrowRecords(latestRecords); }} notificationsEnabled={notificationEnabled} onToggleNotifications={toggleNotifications} />;
       case "settings":
         return <Setting users={users} cars={cars} carLoadError={carLoadError} passwordResetRequests={passwordResetRequests} onApprovePasswordReset={approveDirectoryPasswordReset} onAddCar={addCar} onUpdateCar={updateCar} onDeleteCar={deleteCar} onAddUser={addDirectoryUser} onUpdateUser={editDirectoryUser} onDeleteUser={removeDirectoryUser} />;
       case "managecar":
@@ -502,6 +519,35 @@ function App() {
   if (!authReady || (session && profileResolvedId !== session.user.id)) return <main className="auth-loading">กำลังตรวจสอบบัญชี…</main>;
   if ((!session && !currentUser) || currentUser?.mustChangePassword) return <Login onSignedIn={handleSignedIn} />;
   const displayUser = currentUser;
+  const toggleNotifications = async () => {
+    if (notificationEnabled && typeof Notification !== "undefined" && Notification.permission !== "granted") {
+      const granted = await requestBrowserNotificationPermission();
+      if (granted) {
+        await showBrowserNotification("เปิดการแจ้งเตือนแล้ว", "ระบบจะแจ้งเตือนเมื่อมีการยืมหรือคืนรถ");
+        registerPushSubscription(currentUser.uid).catch(() => undefined);
+      }
+      return;
+    }
+    const nextEnabled = !notificationEnabled;
+    setNotificationEnabled(nextEnabled);
+    window.localStorage.setItem("car-booking-notifications", nextEnabled ? "on" : "off");
+    if (nextEnabled) {
+      const granted = await requestBrowserNotificationPermission();
+      if (!granted) {
+        setNotificationToast({ title: "ยังไม่ได้อนุญาตการแจ้งเตือน", body: "กรุณาเปิด Notifications ของเว็บไซต์นี้ใน Windows แล้วลองเปิดอีกครั้ง" });
+        window.setTimeout(() => setNotificationToast(null), 6000);
+        return;
+      }
+      const registered = await registerPushSubscription(currentUser.uid).catch(() => false);
+      if (!registered) {
+        setNotificationToast({ title: "ยังเปิด Push Notification ไม่ได้", body: "กรุณาตั้งค่า VITE_VAPID_PUBLIC_KEY และ Deploy notify-activity ก่อน" });
+        window.setTimeout(() => setNotificationToast(null), 6000);
+      } else {
+        await showBrowserNotification("เปิดการแจ้งเตือนแล้ว", "ระบบจะแจ้งเตือนเมื่อมีการยืมหรือคืนรถ");
+      }
+    }
+    else if (currentUser?.uid) await removePushSubscriptions(currentUser.uid);
+  };
 
   return (
     <div className="app-layout">
@@ -528,6 +574,7 @@ function App() {
       <main className="app-main">
         {renderPage()}
       </main>
+      {notificationToast && <div className="app-notification-toast" role="status" aria-live="polite"><strong>{notificationToast.title}</strong><span>{notificationToast.body}</span></div>}
     </div>
   );
 }

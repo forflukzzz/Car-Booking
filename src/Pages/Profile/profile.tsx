@@ -30,9 +30,9 @@ const CalendarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="
 const CarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.7-4.2A2 2 0 0 1 8.56 5.5h6.88a2 2 0 0 1 1.86 1.3L19 11" /><path d="M3 11h18v6H3zM6 17v2M18 17v2M6 14h.01M18 14h.01" /></svg>;
 
 type ProfileUser = { name: string; uid: string };
-type ProfileProps = { user: ProfileUser | null; records: BorrowRecord[]; onReturn: (record: BorrowRecord) => void; onCancelReservation: (id: number) => void; onRefresh?: () => Promise<void> };
+type ProfileProps = { user: ProfileUser | null; records: BorrowRecord[]; onReturn: (record: BorrowRecord) => void; onCancelReservation: (id: number) => void; onRefresh?: () => Promise<void>; notificationsEnabled?: boolean; onToggleNotifications?: () => void };
 
-export default function Profile({ user, records, onReturn, onCancelReservation, onRefresh }: ProfileProps) {
+export default function Profile({ user, records, onReturn, onCancelReservation, onRefresh, notificationsEnabled = true, onToggleNotifications }: ProfileProps) {
   useEffect(() => {
     void onRefresh?.();
   }, []);
@@ -68,6 +68,7 @@ export default function Profile({ user, records, onReturn, onCancelReservation, 
     <main className="profile-page">
       <div className="profile-container">
 <header className="profile-topbar"><div className="profile-top-user"><div className="profile-avatar"><UserIcon /></div><div className="profile-identity"><p className="profile-label">ยินดีต้อนรับ</p><h2>{profileName}</h2><p className="profile-uid"><span>UID</span> {profileUid}</p></div></div><div className="profile-top-stat"><div className="profile-stat-card"><div className="profile-stat-icon"><CarIcon /></div><div><p>จำนวนการใช้งานรถยนต์</p><strong>{usageRecords.length} <span>ครั้ง</span></strong></div><span className="profile-stat-trend">ทั้งหมด</span></div></div></header>
+        <div className="profile-notification-setting"><span><strong>การแจ้งเตือน</strong><small>รับการแจ้งเตือนเมื่อมีการยืมหรือคืนรถ</small></span><button className={`profile-notification-toggle${notificationsEnabled ? " is-enabled" : ""}`} type="button" onClick={onToggleNotifications} aria-pressed={notificationsEnabled}><span aria-hidden="true">{notificationsEnabled ? "🔔" : "🔕"}</span>{notificationsEnabled ? "ปิดการแจ้งเตือน" : "เปิดการแจ้งเตือน"}</button></div>
         <section className="profile-history" aria-labelledby="profile-history-title">
           <div className="profile-section-heading">
             <div className="profile-section-icon"><CalendarIcon /></div>

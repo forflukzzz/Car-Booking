@@ -15,6 +15,8 @@ type SidebarProps = {
   onNavigate?: (item: SidebarItem) => void;
   role?: "user" | "manager" | "admin";
   onLogout?: () => void;
+  notificationsEnabled?: boolean;
+  onToggleNotifications?: () => void;
 };
 
 const navigationItems: { id: SidebarItem; label: string }[] = [
@@ -50,7 +52,7 @@ function SidebarIcon({ item }: { item: SidebarItem }) {
   return <img src={icons[item]} alt="" aria-hidden="true" />;
 }
 
-export default function Sidebar({ activeItem = "vehicles", onNavigate, role = "user", onLogout }: SidebarProps) {
+export default function Sidebar({ activeItem = "vehicles", onNavigate, role = "user", onLogout, notificationsEnabled = true, onToggleNotifications }: SidebarProps) {
   const [logoutOpen, setLogoutOpen] = useState(false);
 
   const confirmLogout = () => {
@@ -80,6 +82,10 @@ export default function Sidebar({ activeItem = "vehicles", onNavigate, role = "u
           <span className="sidebar-nav-label">ออกจากระบบ</span>
         </button>
       </nav>
+      <button className={`sidebar-notification-toggle${notificationsEnabled ? " is-enabled" : ""}`} type="button" onClick={onToggleNotifications} aria-pressed={notificationsEnabled}>
+        <span aria-hidden="true">{notificationsEnabled ? "🔔" : "🔕"}</span>
+        <span>{notificationsEnabled ? "ปิดการแจ้งเตือน" : "เปิดการแจ้งเตือน"}</span>
+      </button>
       <button className="sidebar-mobile-logout" type="button" onClick={() => setLogoutOpen(true)} aria-label="ออกจากระบบ">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" /></svg>
         <span>ออกจากระบบ</span>
