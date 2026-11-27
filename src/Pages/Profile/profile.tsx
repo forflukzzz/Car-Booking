@@ -28,6 +28,7 @@ const getRequesterUid = (record: BorrowRecord) => record.requesterUid || record.
 const UserIcon = () => <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="34" r="18" /><path d="M14 92c3-21 17-35 36-35s33 14 36 35H14Z" /></svg>;
 const CalendarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M7 3v4M17 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" /></svg>;
 const CarIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.7-4.2A2 2 0 0 1 8.56 5.5h6.88a2 2 0 0 1 1.86 1.3L19 11" /><path d="M3 11h18v6H3zM6 17v2M18 17v2M6 14h.01M18 14h.01" /></svg>;
+const BellIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>;
 
 type ProfileUser = { name: string; uid: string };
 type ProfileProps = { user: ProfileUser | null; records: BorrowRecord[]; onReturn: (record: BorrowRecord) => void; onCancelReservation: (id: number) => void; onRefresh?: () => Promise<void>; notificationsEnabled?: boolean; onToggleNotifications?: () => void };
@@ -67,6 +68,7 @@ export default function Profile({ user, records, onReturn, onCancelReservation, 
   return (
     <main className="profile-page">
       <div className="profile-container">
+        <div className="profile-desktop-notification-bar"><button className={`profile-desktop-notification${notificationsEnabled ? " is-enabled" : ""}`} type="button" onClick={onToggleNotifications} aria-label={notificationsEnabled ? "ปิดการแจ้งเตือน" : "เปิดการแจ้งเตือน"} aria-pressed={notificationsEnabled}><BellIcon /></button></div>
 <header className="profile-topbar"><div className="profile-top-user"><div className="profile-avatar"><UserIcon /></div><div className="profile-identity"><p className="profile-label">ยินดีต้อนรับ</p><h2>{profileName}</h2><p className="profile-uid"><span>UID</span> {profileUid}</p></div></div><div className="profile-top-stat"><div className="profile-stat-card"><div className="profile-stat-icon"><CarIcon /></div><div><p>จำนวนการใช้งานรถยนต์</p><strong>{usageRecords.length} <span>ครั้ง</span></strong></div><span className="profile-stat-trend">ทั้งหมด</span></div></div></header>
         <div className="profile-notification-setting"><span><strong>การแจ้งเตือน</strong><small>รับการแจ้งเตือนเมื่อมีการยืมหรือคืนรถ</small></span><button className={`profile-notification-toggle${notificationsEnabled ? " is-enabled" : ""}`} type="button" onClick={onToggleNotifications} aria-pressed={notificationsEnabled}><span aria-hidden="true">{notificationsEnabled ? "🔔" : "🔕"}</span>{notificationsEnabled ? "ปิดการแจ้งเตือน" : "เปิดการแจ้งเตือน"}</button></div>
         <section className="profile-history" aria-labelledby="profile-history-title">

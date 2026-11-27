@@ -54,6 +54,7 @@ function SidebarIcon({ item }: { item: SidebarItem }) {
 
 export default function Sidebar({ activeItem = "vehicles", onNavigate, role = "user", onLogout, notificationsEnabled = true, onToggleNotifications }: SidebarProps) {
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const confirmLogout = () => {
     setLogoutOpen(false);
@@ -90,6 +91,8 @@ export default function Sidebar({ activeItem = "vehicles", onNavigate, role = "u
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" /></svg>
         <span>ออกจากระบบ</span>
       </button>
+      <button className="sidebar-mobile-menu-button" type="button" onClick={() => setMobileMenuOpen((open) => !open)} aria-label="เปิดเมนู" aria-expanded={mobileMenuOpen}><span /><span /><span /></button>
+      {mobileMenuOpen && <div className="sidebar-mobile-menu" role="menu"><button className={`sidebar-notification-toggle${notificationsEnabled ? " is-enabled" : ""}`} type="button" onClick={() => { onToggleNotifications?.(); setMobileMenuOpen(false); }} aria-pressed={notificationsEnabled} role="menuitem"><span aria-hidden="true">{notificationsEnabled ? "🔔" : "🔕"}</span><span>{notificationsEnabled ? "ปิดการแจ้งเตือน" : "เปิดการแจ้งเตือน"}</span></button><button className="sidebar-mobile-menu-logout" type="button" onClick={() => { setMobileMenuOpen(false); setLogoutOpen(true); }} role="menuitem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" /></svg><span>ออกจากระบบ</span></button></div>}
       {logoutOpen && <div className="sidebar-logout-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setLogoutOpen(false); }}>
         <section className="sidebar-logout-modal" role="alertdialog" aria-modal="true" aria-labelledby="sidebar-logout-title">
           <div className="sidebar-logout-modal-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" /></svg></div>
