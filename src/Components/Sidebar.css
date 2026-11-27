@@ -274,4 +274,6 @@
   .sidebar-mobile-menu .sidebar-notification-toggle:hover,.sidebar-mobile-menu-logout:hover{background:#eef6ff}
   .sidebar-mobile-menu-logout svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8}
   .sidebar-mobile-menu .sidebar-notification-toggle span:first-child{font-size:17px}
+  .sidebar:not(.is-profile-active) .sidebar-mobile-menu-button{display:none}
+  .sidebar:not(.is-profile-active) .sidebar-mobile-menu{display:none}
 }
