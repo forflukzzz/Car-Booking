@@ -35,13 +35,14 @@ Deno.serve(async (request) => {
   const results = await Promise.all(targets.map(async (item) => {
     try {
       await webpush.sendNotification({ endpoint: item.endpoint, keys: { p256dh: item.p256dh, auth: item.auth } }, JSON.stringify({ title, body, url: "/history" }));
-      return { ok: true };
+      return { ok: true, statusCode: 200, error: "" };
     } catch (sendError) {
-      if (sendError instanceof Error && sendError.message.includes("410")) await admin.from("push_subscriptions").delete().eq("id", item.id);
-      return { ok: false, error: sendError instanceof Error ? sendError.message : String(sendError) };
+      const statusCode = Number((sendError as { statusCode?: number }).statusCode || 0);
+      if ([403, 404, 410].includes(statusCode) || (sendError instanceof Error && /\b(403|404|410)\b/.test(sendError.message))) await admin.from("push_subscriptions").delete().eq("id", item.id);
+      return { ok: false, statusCode, error: sendError instanceof Error ? sendError.message : String(sendError) };
     }
   }));
   const failed = results.filter((result) => !result.ok);
-  if (failed.length) return json(502, { sent: results.length - failed.length, failed: failed.length, errors: failed.map((result) => result.error) });
+  if (failed.length) return json(502, { sent: results.length - failed.length, failed: failed.length, errors: failed.map((result) => ({ statusCode: result.statusCode, message: result.error })) });
   return json(200, { sent: targets.length, recipients: recipientUids.size, subscriptions: subscriptions?.length || 0 });
 });

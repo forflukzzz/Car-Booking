@@ -6,8 +6,14 @@ const decodeKey = (value: string) => Uint8Array.from(atob(value.replace(/-/g, "+
 export const registerPushSubscription = async (userUid: string) => {
   if (!vapidPublicKey || !("serviceWorker" in navigator) || !("PushManager" in window)) return false;
   const registration = await navigator.serviceWorker.register("/sw.js");
-  const existing = await registration.pushManager.getSubscription();
+  const keyMarker = "car-booking-vapid-public-key-v2";
+  let existing = await registration.pushManager.getSubscription();
+  if (existing && window.localStorage.getItem(keyMarker) !== vapidPublicKey) {
+    await existing.unsubscribe();
+    existing = null;
+  }
   const subscription = existing || await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: decodeKey(vapidPublicKey) });
+  window.localStorage.setItem(keyMarker, vapidPublicKey);
   const json = subscription.toJSON();
   const { error } = await supabase.from("push_subscriptions").upsert({
     user_uid: userUid, endpoint: subscription.endpoint, p256dh: json.keys?.p256dh || "", auth: json.keys?.auth || "", enabled: true,
@@ -25,10 +31,11 @@ const invokeNotifyActivity = async (activity: { type: "issue"; requester: string
   if (result.error) {
     let details = result.error.message;
     const response = (result.error as { context?: unknown }).context;
-    if (response instanceof Response) {
+    if (response && typeof (response as { clone?: unknown }).clone === "function") {
       try {
-        const payload = await response.clone().json();
+        const payload = await (response as Response).clone().json();
         if (payload?.error) details = payload.details ? `${payload.error}: ${payload.details}` : payload.error;
+        if (payload?.errors) details = `${details} (${JSON.stringify(payload.errors)})`;
       } catch {
         // Keep the original Supabase error when the response is not JSON.
       }
