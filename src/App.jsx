@@ -143,6 +143,8 @@ function App() {
 
   useEffect(() => {
     if (!currentUser || !notificationEnabled) return undefined;
+    const shouldSubscribeToLegacyActivityNotifications = false;
+    if (!shouldSubscribeToLegacyActivityNotifications) return undefined;
     const channel = supabase
       .channel("car-booking-borrow-record-notifications")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "borrow_records" }, (payload) => {
@@ -267,12 +269,12 @@ function App() {
           issue_description: details.issueReport.trim(),
         });
         if (issueError) throw issueError;
+        void notifyPushActivity({ type: "issue", requester: details.requester, requesterUid: details.requester.match(/\(UID:\s*([^\)]+)\)/i)?.[1], model: returnedRecord.model, plate: returnedRecord.plate, issueReport: details.issueReport.trim() });
       }
       const savedCar = await updateCarUsage(returnedCar.id, details.mileage, details.returnDate);
       setBorrowRecords((records) => records.map((record) => record.id === updated.id ? { ...updated, issueReport: details.issueReport?.trim() || undefined } : record));
       setCars((currentCars) => currentCars.map((car) => car.id === savedCar.id ? savedCar : car));
       setSelectedCar((currentCar) => currentCar?.id === savedCar.id ? savedCar : currentCar);
-      void notifyPushActivity({ type: "return", requester: details.requester, requesterUid: details.requester.match(/\(UID:\s*([^\)]+)\)/i)?.[1], model: returnedRecord.model, plate: returnedRecord.plate });
       setStorageError(null);
       navigateToPage("status");
       return true;

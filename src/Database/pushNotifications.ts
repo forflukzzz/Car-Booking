@@ -20,6 +20,6 @@ export const removePushSubscriptions = async (userUid: string) => {
   if (userUid) await supabase.from("push_subscriptions").update({ enabled: false }).eq("user_uid", userUid);
 };
 
-export const notifyPushActivity = async (activity: { type: "borrow" | "return"; requester: string; model?: string; plate?: string; requesterUid?: string }) => {
+export const notifyPushActivity = async (activity: { type: "issue"; requester: string; requesterUid?: string; model: string; plate: string; issueReport: string }) => {
   await supabase.functions.invoke("notify-activity", { body: activity });
 };

@@ -141,7 +141,6 @@ export default function Bowrro({ car, requesterName, requesterUid, onCancel, onS
       const { error: carError } = await supabase.from("cars").update({ status: requestStatus === "reserved" ? "reserved" : "busy" }).eq("id", car.id);
       if (carError) throw new Error([carError.message, carError.details, carError.code ? `code: ${carError.code}` : ""].filter(Boolean).join(" | "));
       await onSaved(car.id);
-      void notifyPushActivity({ type: "borrow", requester: requesterUid ? `${cleanRequester} (UID: ${requesterUid})` : cleanRequester, requesterUid, model: car.model, plate: car.plate });
       const saved = true;
       if (!saved) throw new Error("บันทึกคำขอไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อฐานข้อมูล");
       setSubmitMessage("บันทึกคำขอใช้รถเรียบร้อยแล้ว");

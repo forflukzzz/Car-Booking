@@ -10,6 +10,9 @@ create table if not exists public.push_subscriptions (
 );
 alter table public.push_subscriptions enable row level security;
 grant select, insert, update on table public.push_subscriptions to anon, authenticated;
+drop policy if exists "Public can register push subscriptions" on public.push_subscriptions;
+drop policy if exists "Public can update push subscriptions" on public.push_subscriptions;
+drop policy if exists "Public can read push subscriptions" on public.push_subscriptions;
 create policy "Public can register push subscriptions" on public.push_subscriptions for insert to anon, authenticated with check (true);
 create policy "Public can update push subscriptions" on public.push_subscriptions for update to anon, authenticated using (true) with check (true);
 create policy "Public can read push subscriptions" on public.push_subscriptions for select to anon, authenticated using (true);
