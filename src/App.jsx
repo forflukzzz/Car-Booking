@@ -581,6 +581,8 @@ function App() {
         onNavigate={navigateToPage}
         role={displayUser.role}
         onLogout={handleLogout}
+        notificationsEnabled={notificationEnabled}
+        onToggleNotifications={toggleNotifications}
       />
       <main className="app-main">
         {renderPage()}
