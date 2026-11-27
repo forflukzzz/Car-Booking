@@ -21,5 +21,8 @@ export const removePushSubscriptions = async (userUid: string) => {
 };
 
 export const notifyPushActivity = async (activity: { type: "issue"; requester: string; requesterUid?: string; model: string; plate: string; issueReport: string }) => {
-  await supabase.functions.invoke("notify-activity", { body: activity });
+  const { data, error } = await supabase.functions.invoke("notify-activity", { body: activity });
+  if (error) throw new Error(`ส่งแจ้งเตือนไม่สำเร็จ: ${error.message}`);
+  if (data?.sent === 0) throw new Error("ไม่พบอุปกรณ์ของ Manager ที่เปิดรับการแจ้งเตือน");
+  return data;
 };

@@ -22,11 +22,19 @@ Deno.serve(async (request) => {
   const { data: subscriptions, error } = await admin.from("push_subscriptions").select("id, user_uid, endpoint, p256dh, auth").eq("enabled", true);
   if (error) return json(500, { error: error.message });
   const { data: managers } = await admin.from("user_directory").select("uid").ilike("role", "manager");
-  const managerUids = new Set((managers || []).map((manager) => String(manager.uid).trim()));
+  const managerUids = new Set((managers || []).map((manager) => String(manager.uid).trim().toLowerCase()));
   webpush.setVapidDetails(Deno.env.get("VAPID_SUBJECT") || "mailto:admin@example.com", vapidPublicKey, vapidPrivateKey);
-  await Promise.all((subscriptions || []).filter((item) => managerUids.has(String(item.user_uid).trim()) && item.user_uid !== activity.requesterUid).map(async (item) => {
-    try { await webpush.sendNotification({ endpoint: item.endpoint, keys: { p256dh: item.p256dh, auth: item.auth } }, JSON.stringify({ title, body, url: "/history" })); }
-    catch (sendError) { if (sendError instanceof Error && sendError.message.includes("410")) await admin.from("push_subscriptions").delete().eq("id", item.id); }
+  const targets = (subscriptions || []).filter((item) => managerUids.has(String(item.user_uid).trim().toLowerCase()) && String(item.user_uid).trim().toLowerCase() !== String(activity.requesterUid || "").trim().toLowerCase());
+  const results = await Promise.all(targets.map(async (item) => {
+    try {
+      await webpush.sendNotification({ endpoint: item.endpoint, keys: { p256dh: item.p256dh, auth: item.auth } }, JSON.stringify({ title, body, url: "/history" }));
+      return { ok: true };
+    } catch (sendError) {
+      if (sendError instanceof Error && sendError.message.includes("410")) await admin.from("push_subscriptions").delete().eq("id", item.id);
+      return { ok: false, error: sendError instanceof Error ? sendError.message : String(sendError) };
+    }
   }));
-  return json(200, { sent: subscriptions?.length || 0 });
+  const failed = results.filter((result) => !result.ok);
+  if (failed.length) return json(502, { sent: results.length - failed.length, failed: failed.length, errors: failed.map((result) => result.error) });
+  return json(200, { sent: targets.length, managers: managerUids.size, subscriptions: subscriptions?.length || 0 });
 });

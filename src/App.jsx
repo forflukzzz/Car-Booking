@@ -269,7 +269,7 @@ function App() {
           issue_description: details.issueReport.trim(),
         });
         if (issueError) throw issueError;
-        void notifyPushActivity({ type: "issue", requester: details.requester, requesterUid: details.requester.match(/\(UID:\s*([^\)]+)\)/i)?.[1], model: returnedRecord.model, plate: returnedRecord.plate, issueReport: details.issueReport.trim() });
+        void notifyPushActivity({ type: "issue", requester: details.requester, requesterUid: details.requester.match(/\(UID:\s*([^\)]+)\)/i)?.[1], model: returnedRecord.model, plate: returnedRecord.plate, issueReport: details.issueReport.trim() }).catch((error) => { console.error(error); setNotificationToast({ title: "ส่งแจ้งเตือน Manager ไม่สำเร็จ", body: error instanceof Error ? error.message : "กรุณาตรวจสอบการตั้งค่า Push Notification" }); window.setTimeout(() => setNotificationToast(null), 6000); });
       }
       const savedCar = await updateCarUsage(returnedCar.id, details.mileage, details.returnDate);
       setBorrowRecords((records) => records.map((record) => record.id === updated.id ? { ...updated, issueReport: details.issueReport?.trim() || undefined } : record));
