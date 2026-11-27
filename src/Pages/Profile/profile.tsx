@@ -72,7 +72,7 @@ export default function Profile({ user, records, onReturn, onCancelReservation, 
         <section className="profile-history" aria-labelledby="profile-history-title">
           <div className="profile-section-heading">
             <div className="profile-section-icon"><CalendarIcon /></div>
-             <div><h2 id="profile-history-title">ประวัติการยืมรถ</h2>
+             <div><h2 id="profile-history-title">ประวัติการใช้รถ</h2>
              <p>รายการการจองและการใช้งานรถล่าสุด</p>
              </div></div>
           <div className="profile-history-tools"><label className="profile-search"><span aria-hidden="true">⌕</span><input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาทะเบียนรถ, วัตถุประสงค์..." aria-label="ค้นหาประวัติการใช้รถ" /></label></div><div className="profile-table-scroll">

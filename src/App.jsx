@@ -526,7 +526,16 @@ function App() {
       const granted = await requestBrowserNotificationPermission();
       if (granted) {
         await showBrowserNotification("เปิดการแจ้งเตือนแล้ว", "ระบบจะแจ้งเตือนเมื่อมีการยืมหรือคืนรถ");
-        registerPushSubscription(currentUser.uid).catch(() => undefined);
+        try {
+          const registered = await registerPushSubscription(currentUser.uid);
+          if (!registered) throw new Error("Push subscription was not created");
+        } catch (error) {
+          setNotificationToast({
+            title: "สมัครอุปกรณ์รับแจ้งเตือนไม่สำเร็จ",
+            body: error instanceof Error ? error.message : "ตรวจสอบ VITE_VAPID_PUBLIC_KEY และตาราง push_subscriptions",
+          });
+          window.setTimeout(() => setNotificationToast(null), 6000);
+        }
       }
       return;
     }

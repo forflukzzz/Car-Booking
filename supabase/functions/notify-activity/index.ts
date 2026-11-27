@@ -1,4 +1,3 @@
-import webpush from "npm:web-push";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type" };
@@ -15,6 +14,12 @@ Deno.serve(async (request) => {
   let activity: { type?: string; requester?: string; requesterUid?: string; model?: string; plate?: string; issueReport?: string };
   try { activity = await request.json(); } catch { return json(400, { error: "Invalid request body" }); }
   if (activity.type !== "issue" || !activity.model || !activity.plate || !activity.issueReport) return json(400, { error: "Invalid vehicle issue notification" });
+  let webpush: typeof import("npm:web-push@3.6.7").default;
+  try {
+    webpush = (await import("npm:web-push@3.6.7")).default;
+  } catch (error) {
+    return json(500, { error: "Push library failed to load", details: error instanceof Error ? error.message : String(error) });
+  }
   const title = "พบปัญหาระหว่างใช้งานรถ";
   const name = String(activity.requester || "ผู้ใช้งาน").replace(/\s*\(UID:\s*[^)]+\)\s*$/i, "").trim();
   const body = `รุ่นรถ: ${activity.model} | ทะเบียน: ${activity.plate} | ผู้ใช้: ${name} | ปัญหา: ${activity.issueReport}`;
